@@ -1,0 +1,6 @@
+{
+  "name": "DrAG — AI Study Assistant with PDF Chat",
+  "description": "Document Retrieval and AI Guide: AI-powered study assistant with RAG, page-level PDF citations, interactive document reader, flashcards, MCQs, and exam preparation tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

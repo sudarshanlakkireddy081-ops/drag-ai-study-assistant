@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: drag_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: drag_user
+      POSTGRES_PASSWORD: drag_secure_password
+      POSTGRES_DB: drag_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drag_user -d drag_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: drag_api
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://drag_user:drag_secure_password@db:5432/drag_db
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - JWT_SECRET=drag_jwt_secret_key_2026
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: drag_web
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
